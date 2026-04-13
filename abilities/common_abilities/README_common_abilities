@@ -1,0 +1,111 @@
+🧠 common_abilities/ – XI Shared System Utilities
+This folder contains shared tools accessible by all XI agents (Davinci, Hermes, Sentinel). These tools cover memory validation, summary promotions, fuzzy scanning, vector control, and conflict resolution. Each script plays a role in the core maintenance, promotion, or semantic interaction with agent memory.
+
+📜 Script Reference
+✅ amend_memory_entry.py
+Edits an existing memory entry by UUID.
+
+Used to manually correct summaries, thoughts, or decisions.
+
+Can update signature, written_by, or other metadata fields.
+
+📌 append_summary_manifest.py
+Appends new entries to the per-agent summary_manifest.json.
+
+Updates include UUID, type (weekly/period/etc), file name, and timestamp.
+
+Called after promotion to keep summary index current.
+
+🧩 interactive_conflict_resolver.py
+CLI tool for resolving memory conflicts across agent journals.
+
+Supports side-by-side comparison and editing of contradictory entries.
+
+Useful for human-guided debugging or arbitration of memory truth.
+
+📥 load_summary_manifest.py
+Loads the summary_manifest.json for any agent.
+
+Returns parsed list of past summaries (with UUID, type, file path).
+
+Utility helper for summary audits or GUI displays.
+
+🔍 memory_fuzzy_scan.py
+Scans memory files for similar or duplicate content using fuzzy logic.
+
+Flags entries with high similarity scores for manual review.
+
+Used by Sentinel and others for anomaly detection.
+
+🧠 memory_index_daemon.py
+Watches all agent memory folders.
+
+Generates vector embeddings using local BERT-style encoder.
+
+Feeds results into PostgreSQL pgvector table in real time.
+
+Keeps track of indexed files with a hash snapshot log.
+
+📥 memory_indexer.py
+Standalone script to index new memory files into Postgres vector DB.
+
+Similar to memory_index_daemon.py, but one-time or batch mode.
+
+Used for full reindexing, catch-up runs, or after a config reset.
+
+🔎 memory_search.py
+Executes semantic search across indexed memory entries.
+
+Supports top-k queries, date filtering, and agent/thread targeting.
+
+Called by agents and vector controller.
+
+🚨 raise_memory_conflict.py
+Flags memory contradictions between agents or within the same agent.
+
+Writes to disputed_entries.json for Sentinel review.
+
+Logs details such as conflicting UUIDs, authors, and differences.
+
+🧠 run_daily_summary_promotions.py
+Automatically checks journal promotion thresholds for each agent.
+
+Calls write_all_summaries_then_archive.py if thresholds are met.
+
+Runs daily as part of background routine flow.
+
+🕰️ time_utils.py
+Defines 4-4-5 period structure used by XI (business-style calendar).
+
+Includes get_current_quarter_and_period() and leap-year logic.
+
+Used for journal tagging, archiving, and summary rotation.
+
+🧪 validate_memory_file.py
+Validates memory .json structure (uuid, summary, timestamp).
+
+Supports single entry, list of entries, or entry bundles.
+
+Reports any missing fields or malformed timestamps.
+
+🧭 vector_controller.py
+Parses and handles all sudo vector commands.
+
+Tracks active agent sessions and vector quota limits.
+
+Delegates actual search to memory_search.py.
+
+📚 write_all_summaries_then_archive.py
+Promotes memory from:
+
+session → weekly
+
+weekly → period
+
+period → quarterly
+
+Archives input entries after each successful promotion.
+
+Adds fields like compiled_uuids, source_files, thoughts, and decisions.
+
+Special logic for Sentinel audit flow.

@@ -1,0 +1,86 @@
+# 🛡️ `abilities/sentinel/` – XI Memory Oversight & Validation System  
+🔒 Readme Lock: `sentinel_readme_locked_july30`
+
+The `sentinel` agent serves as the **truth guardian** for the XI system. It runs background audits, verifies journal accuracy, detects hallucinated entries, enforces memory logic (axioms), and writes audit journals with Minisign signatures.
+
+---
+
+## 📜 Core Files
+
+| File | Purpose |
+|------|---------|
+| `sentinel_routine_audit.py` | Master script: runs audits across agents, validates thread alignment, signature checks, and enforces axioms. |
+| `sentinel_write_session_journal.py` | Writes Sentinel’s structured journal after each audit using session cache. |
+| `sentinel_contextual_validator.py` | Sentence-by-sentence comparison of journal entries vs threads using vector and fallback GGUF logic. |
+| `thread_memory_validator.py` | Validates journal entries and summaries (weekly/period/quarterly) against threads and source UUIDs. |
+| `summary_layer_validator.py` | Validates summary layer hierarchy: ensures summaries contain keywords from underlying UUID-linked entries. |
+| `resolve_uuid_to_source.py` | Resolves a list of UUIDs to their source journal file paths. Used by summary validators. |
+| `verify_signature.py` | CLI utility to verify a journal’s Minisign signature using the correct public key. |
+| `axiom_enforcer.py` | Applies logical axioms (e.g. AXIOM-004: newer overrides older if confirmed). Writes to `disputed_entries.json`. |
+
+---
+
+## 🔁 Sentinel Flow Overview
+
+1. **Triggered via** `routines_orchestrator.py` (daily)
+2. Performs:
+   - Signature verification (`verify_signature`)
+   - Thread validation (`validate_session_journal_against_thread`)
+   - Sentence-level validation (`sentinel_contextual_validator`)
+   - Summary promotion trace validation (`summary_layer_validator`)
+   - Axiom enforcement (`axiom_enforcer`)
+3. Writes structured audit journal (`sentinel_write_session_journal.py`)
+4. Stores output in: memory/sentinel/sentinel_audit_journal/session/
+
+
+---
+
+## 📂 Output Files
+
+| Location | Description |
+|----------|-------------|
+| `sentinel_audit_journal/session/` | Full audit logs per day (signed) |
+| `sentinel_audit_journal/contextual_checks/` | Sentence-level contextual mismatch logs |
+| `sentinel_audit_journal/summary_layer_checks/` | Summary hierarchy audit reports |
+| `disputed_entries.json` | Axiom violations and belief conflicts |
+
+---
+
+## 🧠 Axiom System
+
+Sentinel enforces internal logic via axioms:
+
+- **AXIOM-004**: Newer belief entries override older ones *if both confirmed by Brandon*. Detected via belief `id` mismatch.
+- **AXIOM-003**: Placeholder – will enforce UUID alignment across summary layers.
+
+Axioms are loaded from:  
+`memory/sentinel/permanent_memory.json → core_beliefs.axioms`
+
+---
+
+## ✅ Sample Audit Chain
+
+```bash
+# Full audit (daily routine or manual)
+python3 abilities/sentinel/sentinel_routine_audit.py
+
+# Signature verification
+python3 abilities/sentinel/verify_signature.py memory/hermes/hermes_session_journal_20250730.json
+
+# Sentence-level contextual audit
+python3 abilities/sentinel/sentinel_contextual_validator.py \
+--thread memory/threads/idea_generator/session/idea_generator_session_20250730.json \
+--journal memory/hermes/idea_generator_journal/session/hermes_session_journal_20250730.json
+
+🧼 Journal Writing After Audit
+Sentinel auto-writes its journal via:
+python3 abilities/sentinel/sentinel_write_session_journal.py \
+  --flow_context '{"flow_type": "audit", "temp": 0.3, "model": "sentinel.fp16.1b", "context_length": 4096}'
+
+The journal is written to:
+memory/sentinel/sentinel_audit_journal/session/
+and signed with Sentinel’s Minisign key.
+
+
+
+
