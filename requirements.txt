@@ -1,0 +1,37 @@
+# Core AI + Transformers
+torch>=2.0.0
+transformers>=4.30.0
+accelerate
+sentencepiece
+
+# Embedding & Vector Search
+scikit-learn
+
+# CLI and utilities
+python-dotenv
+llama-cpp-python>=0.2.11
+rich
+tqdm
+
+---
+
+nltk>=3.9.1
+# After installing, run:
+# python -m nltk.downloader punkt punkt_tab -d ~/nltk_data
+
+source ~/XI/venv/bin/activate
+python - <<'PY'
+import nltk
+print("NLTK search paths:", nltk.data.path)
+from nltk.tokenize import sent_tokenize
+print(sent_tokenize("This is a test. It should split into two sentences."))
+PY
+
+source ~/XI/venv/bin/activate
+python - <<'PY'
+import nltk
+nltk.download("punkt")
+nltk.download("punkt_tab")
+PY
+
+
