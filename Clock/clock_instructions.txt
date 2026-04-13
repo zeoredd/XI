@@ -1,0 +1,151 @@
+1) Disable automatic NTP (so nothing else moves the clock)
+sudo timedatectl set-ntp false
+
+2) Safe-forward boot script (monotonic policy)
+
+Create /usr/local/bin/xi_time_boot.sh:
+
+#!/usr/bin/env bash
+set -euo pipefail
+
+LOG_DIR="/home/node-alpha/XI/logs"
+STATE_DIR="/var/lib/xi/time_flags"
+mkdir -p "$LOG_DIR" "$STATE_DIR"
+
+log() { echo "[$(date -u +'%Y-%m-%dT%H:%M:%SZ')] $*" | tee -a "$LOG_DIR/time_init.log" ; }
+
+# Read current system time (UTC) as epoch
+now_epoch=$(date -u +%s)
+
+# Try to read RTC -> epoch
+rtc_line="$(hwclock --utc --get 2>/dev/null || true)"
+if [[ -z "$rtc_line" ]]; then
+  log "⚠️  RTC read FAILED (hwclock returned empty). Leaving system time unchanged."
+  touch "$STATE_DIR/rtc_failed"
+  exit 0
+fi
+
+# Parse RTC output into epoch (robust to formats)
+# Examples: "2025-08-28 12:03:04.123456+00:00" or "2025-08-28 12:03:04.123456+0000" or "2025-08-28 12:03:04"
+rtc_epoch=$(date -u -d "$rtc_line" +%s 2>/dev/null || echo "")
+
+if [[ -z "$rtc_epoch" ]]; then
+  log "⚠️  RTC parse FAILED: '$rtc_line'. Leaving system time unchanged."
+  touch "$STATE_DIR/rtc_failed"
+  exit 0
+fi
+
+# Only move time FORWARD, never backward.
+if (( rtc_epoch > now_epoch )); then
+  # Optional safety: cap the forward jump at 30 days to catch RTC insanity
+  max_jump=$((30*24*3600))
+  delta=$((rtc_epoch - now_epoch))
+  if (( delta > max_jump )); then
+    log "⚠️  RTC jump too large (+${delta}s > ${max_jump}s). Refusing. Leaving time unchanged."
+    touch "$STATE_DIR/rtc_suspicious"
+    exit 0
+  fi
+
+  # Set system clock forward to RTC
+  date -u -s "@${rtc_epoch}" >/dev/null
+  hwclock --systohc --utc >/dev/null 2>&1 || true
+  log "✅ System clock set forward from RTC (delta=+${delta}s)."
+  rm -f "$STATE_DIR/rtc_failed" "$STATE_DIR/rtc_suspicious" || true
+else
+  # RTC is behind or equal — NEVER set backwards. Keep system time.
+  log "ℹ️ RTC (epoch=${rtc_epoch}) <= system (epoch=${now_epoch}); monotonic policy: no change."
+fi
+
+exit 0
+
+sudo chmod +x /usr/local/bin/xi_time_boot.sh
+
+
+What it does:
+
+Reads RTC.
+
+If unreadable/unparseable → leaves time as-is and logs a warning (creates /var/lib/xi/time_flags/rtc_failed).
+
+If RTC > system time → moves time forward (with a max forward jump guard).
+
+If RTC ≤ system time → does nothing (never backwards).
+
+3) Run it at boot, before any timers
+
+Create /etc/systemd/system/xi-time-boot.service:
+
+[Unit]
+Description=XI Safe Time Init (USB RTC -> system time, forward-only)
+DefaultDependencies=no
+Before=timers.target
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/xi_time_boot.sh
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+
+Enable it:
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now xi-time-boot.service
+
+
+This ensures your system clock is corrected (forward-only) before systemd timers start firing.
+
+4) (Optional) Add a daily health check + warning
+
+If you want a daily “did RTC work?” check:
+
+Create /etc/systemd/system/xi-rtc-health.service:
+
+[Unit]
+Description=XI RTC Health Check
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '[ -f /var/lib/xi/time_flags/rtc_failed ] && echo "RTC FAILED at boot" >> /home/node-alpha/XI/logs/time_init.log || true'
+User=root
+
+
+Timer /etc/systemd/system/xi-rtc-health.timer:
+
+[Unit]
+Description=Daily RTC Health Check
+
+[Timer]
+OnCalendar=*-*-* 09:00:00
+Persistent=true
+Unit=xi-rtc-health.service
+
+[Install]
+WantedBy=timers.target
+
+
+Enable:
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now xi-rtc-health.timer
+
+Result
+
+Your USB RTC is the first line and authoritative for boot-time sync.
+
+Time never goes backwards (monotonic policy).
+
+If the RTC can’t be read, you keep current time and get a clear warning (log + flag file).
+
+No Air Link override is used (so a compromised external node can’t set backwards time).
+
+If you later want Air Link as a forward-only optional override, we can add a second script that:
+
+Gets a proposed external timestamp,
+
+Only applies it if it’s > current and within a sane jump window,
+
+Otherwise logs and skips.

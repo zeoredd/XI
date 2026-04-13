@@ -1,0 +1,1 @@
+minisign -Vm <file> -P RWSzXOsq1oqJ6AhrwvKyUt19Kgtl7O1i/wrBSIAnhslASD4kpPsniwDh

@@ -1,0 +1,80 @@
+Timers to add (recommended schedule)
+
+Daily (03:00)
+
+Protocol Sentinel + AI task (edge cases):
+runtime.routines_orchestrator --sentinel --sentinel-ai-edgecases 
+
+Daily (03:10)
+
+Consume AI task (ask sentinel agent, apply overlays, re-index):
+runtime.routines_orchestrator --sentinel-ai-consume 
+
+Daily (03:20)
+
+Rollups (weekly/period/quarterly if due), amendments sweep, indexer one-shot + ensure daemon:
+runtime.routines_orchestrator --run-all
+(this runs rollups → sweep → index → sentinel quick if you enable it; you can also call sub-flags explicitly) 
+
+Daily (04:00)
+
+Quick Sentinel window (sanity on last few hours):
+runtime.routines_orchestrator --sentinel-quick --sentinel-window-hours 2 
+
+Daily (04:30)
+
+Sandbox cleanup (temp artifacts): already in the orchestrator as sweep_sandbox(); put it on a timer if you want it independent:
+python tools/sandbox_retention.py --root ./sandbox --days 21 
+
+Weekly (Sun 04:45)
+
+DB hygiene (Postgres): VACUUM (ANALYZE) tables used by memory/indexer; optionally REINDEX if you see bloat.
+
+Weekly (Sun 05:15)
+
+Log rotation + old archives prune (keep N months).
+
+Monthly (1st 05:30)
+
+Full consistency sweep: re-run indexer --all (cold read) for drift detection.
+
+Model/embedding fingerprint check (alert if embedder changed vs. DB fingerprint).
+
+Backup memory/ and DB dump (logical pg_dump).
+
+Why these timers
+
+You already have the orchestrator hooks for rollups, indexer one-shot, ensuring daemon, and Sentinel audits—including quick mode and the AI edge-case mode we added. Scheduling them at night staggers load and keeps daytime flows snappy.
+
+-----------------------------
+    *     CRON JOBS      *
+-----------------------------
+
+# 03:00 — protocol audit + emit AI edge-cases task
+0 3 * * * cd /home/node-alpha/XI && /home/node-alpha/XI/venv/bin/python3 -m runtime.routines_orchestrator --sentinel --sentinel-ai-edgecases >> /home/node-alpha/XI/logs/sentinel_night_audit.log 2>&1
+
+# 03:10 — consume the AI task (invoke sentinel agent), apply overlays, re-index
+10 3 * * * cd /home/node-alpha/XI && /home/node-alpha/XI/venv/bin/python3 -m runtime.routines_orchestrator --sentinel-ai-consume >> /home/node-alpha/XI/logs/sentinel_night_ai_consume.log 2>&1
+
+# 03:00 — Protocol audit + emit AI edge-cases task
+0 3 * * * cd /home/node-alpha/XI && ./venv/bin/python3 -m runtime.routines_orchestrator --sentinel --sentinel-ai-edgecases >> logs/sentinel_night_audit.log 2>&1
+
+# 03:10 — Consume AI task (agent review → overlays → re-index)
+10 3 * * * cd /home/node-alpha/XI && ./venv/bin/python3 -m runtime.routines_orchestrator --sentinel-ai-consume >> logs/sentinel_night_consume.log 2>&1
+
+# 03:20 — Rollups (if due), sweep amendments, indexer once + ensure daemon
+20 3 * * * cd /home/node-alpha/XI && ./venv/bin/python3 -m runtime.routines_orchestrator --run-all >> logs/run_all.log 2>&1
+
+# 04:00 — Quick Sentinel pass over the last 2h
+0 4 * * * cd /home/node-alpha/XI && ./venv/bin/python3 -m runtime.routines_orchestrator --sentinel-quick --sentinel-window-hours 2 >> logs/sentinel_quick.log 2>&1
+
+# 04:30 — Sandbox retention (keep 21 days)
+30 4 * * * cd /home/node-alpha/XI && ./venv/bin/python3 tools/sandbox_retention.py --root ./sandbox --days 21 >> logs/sandbox_retention.log 2>&1
+
+# Weekly: DB vacuum/analyze (example: Sunday 04:45)
+45 4 * * 0 /usr/bin/psql -d xi_memory -c "VACUUM (ANALYZE);" >> /home/node-alpha/XI/logs/db_maint.log 2>&1
+
+# Monthly: cold reindex sweep + backup (1st @ 05:30)
+30 5 1 * * cd /home/node-alpha/XI && ./venv/bin/python3 -m abilities.common_abilities.memory_indexer >> logs/index_full.log 2>&1
+35 5 1 * * /usr/bin/pg_dump xi_memory > /home/node-alpha/XI/backups/xi_memory_$(date +\%Y\%m\%d).sql
+

@@ -1,0 +1,448 @@
+ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no
+ggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no
+ggml_cuda_init: found 1 CUDA devices:
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes
+build: 6401 (c4df49a4) with gcc-12 (Ubuntu 12.4.0-2ubuntu1~24.04) 12.4.0 for x86_64-linux-gnu
+system info: n_threads = 16, n_threads_batch = 16, total_threads = 32
+
+system_info: n_threads = 16 (n_threads_batch = 16) / 32 | CUDA : ARCHS = 1200 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | AVX512 = 1 | AVX512_VBMI = 1 | AVX512_VNNI = 1 | AVX512_BF16 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+
+main: binding port with default address family
+main: HTTP server is listening, hostname: 127.0.0.1, port: 11436, http threads: 31
+main: loading model
+srv    load_model: loading model '/home/ghost/XI/companions/davinci/davinci.gguf'
+llama_model_load_from_file_impl: using device CUDA0 (NVIDIA GeForce RTX 5090) - 31590 MiB free
+llama_model_loader: loaded meta data with 41 key-value pairs and 363 tensors from /home/ghost/XI/companions/davinci/davinci.gguf (version GGUF V3 (latest))
+llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
+llama_model_loader: - kv   0:                       general.architecture str              = llama
+llama_model_loader: - kv   1:                               general.type str              = model
+llama_model_loader: - kv   2:                               general.name str              = Mistral-Small-3.2-24B-Instruct-2506
+llama_model_loader: - kv   3:                            general.version str              = 2506
+llama_model_loader: - kv   4:                           general.finetune str              = Instruct
+llama_model_loader: - kv   5:                           general.basename str              = Mistral-Small-3.2-24B-Instruct-2506
+llama_model_loader: - kv   6:                       general.quantized_by str              = Unsloth
+llama_model_loader: - kv   7:                         general.size_label str              = 24B
+llama_model_loader: - kv   8:                           general.repo_url str              = https://huggingface.co/unsloth
+llama_model_loader: - kv   9:                          llama.block_count u32              = 40
+llama_model_loader: - kv  10:                       llama.context_length u32              = 131072
+llama_model_loader: - kv  11:                     llama.embedding_length u32              = 5120
+llama_model_loader: - kv  12:                  llama.feed_forward_length u32              = 32768
+llama_model_loader: - kv  13:                 llama.attention.head_count u32              = 32
+llama_model_loader: - kv  14:              llama.attention.head_count_kv u32              = 8
+llama_model_loader: - kv  15:                       llama.rope.freq_base f32              = 1000000000.000000
+llama_model_loader: - kv  16:     llama.attention.layer_norm_rms_epsilon f32              = 0.000010
+llama_model_loader: - kv  17:                 llama.attention.key_length u32              = 128
+llama_model_loader: - kv  18:               llama.attention.value_length u32              = 128
+llama_model_loader: - kv  19:                           llama.vocab_size u32              = 131072
+llama_model_loader: - kv  20:                 llama.rope.dimension_count u32              = 128
+llama_model_loader: - kv  21:                       tokenizer.ggml.model str              = gpt2
+llama_model_loader: - kv  22:                         tokenizer.ggml.pre str              = tekken
+llama_model_loader: - kv  23:                      tokenizer.ggml.tokens arr[str,131072]  = ["<unk>", "<s>", "</s>", "[INST]", "[...
+llama_model_loader: - kv  24:                  tokenizer.ggml.token_type arr[i32,131072]  = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, ...
+llama_model_loader: - kv  25:                      tokenizer.ggml.merges arr[str,269443]  = ["Ġ Ġ", "Ġ t", "e r", "i n", "Ġ �...
+llama_model_loader: - kv  26:                tokenizer.ggml.bos_token_id u32              = 1
+llama_model_loader: - kv  27:                tokenizer.ggml.eos_token_id u32              = 2
+llama_model_loader: - kv  28:            tokenizer.ggml.unknown_token_id u32              = 0
+llama_model_loader: - kv  29:            tokenizer.ggml.padding_token_id u32              = 11
+llama_model_loader: - kv  30:               tokenizer.ggml.add_bos_token bool             = true
+llama_model_loader: - kv  31:               tokenizer.ggml.add_sep_token bool             = false
+llama_model_loader: - kv  32:               tokenizer.ggml.add_eos_token bool             = false
+llama_model_loader: - kv  33:                    tokenizer.chat_template str              = {#- Unsloth template fixes #}\n{%- set...
+llama_model_loader: - kv  34:            tokenizer.ggml.add_space_prefix bool             = false
+llama_model_loader: - kv  35:               general.quantization_version u32              = 2
+llama_model_loader: - kv  36:                          general.file_type u32              = 7
+llama_model_loader: - kv  37:                      quantize.imatrix.file str              = Mistral-Small-3.2-24B-Instruct-2506-G...
+llama_model_loader: - kv  38:                   quantize.imatrix.dataset str              = unsloth_calibration_Mistral-Small-3.2...
+llama_model_loader: - kv  39:             quantize.imatrix.entries_count u32              = 280
+llama_model_loader: - kv  40:              quantize.imatrix.chunks_count u32              = 81
+llama_model_loader: - type  f32:   81 tensors
+llama_model_loader: - type q8_0:  282 tensors
+print_info: file format = GGUF V3 (latest)
+print_info: file type   = Q8_0
+print_info: file size   = 23.33 GiB (8.50 BPW) 
+load: special_eos_id is not in special_eog_ids - the tokenizer config may be incorrect
+load: printing all EOG tokens:
+load:   - 2 ('</s>')
+load: special tokens cache size = 1000
+load: token to piece cache size = 0.8498 MB
+print_info: arch             = llama
+print_info: vocab_only       = 0
+print_info: n_ctx_train      = 131072
+print_info: n_embd           = 5120
+print_info: n_layer          = 40
+print_info: n_head           = 32
+print_info: n_head_kv        = 8
+print_info: n_rot            = 128
+print_info: n_swa            = 0
+print_info: is_swa_any       = 0
+print_info: n_embd_head_k    = 128
+print_info: n_embd_head_v    = 128
+print_info: n_gqa            = 4
+print_info: n_embd_k_gqa     = 1024
+print_info: n_embd_v_gqa     = 1024
+print_info: f_norm_eps       = 0.0e+00
+print_info: f_norm_rms_eps   = 1.0e-05
+print_info: f_clamp_kqv      = 0.0e+00
+print_info: f_max_alibi_bias = 0.0e+00
+print_info: f_logit_scale    = 0.0e+00
+print_info: f_attn_scale     = 0.0e+00
+print_info: n_ff             = 32768
+print_info: n_expert         = 0
+print_info: n_expert_used    = 0
+print_info: causal attn      = 1
+print_info: pooling type     = 0
+print_info: rope type        = 0
+print_info: rope scaling     = linear
+print_info: freq_base_train  = 1000000000.0
+print_info: freq_scale_train = 1
+print_info: n_ctx_orig_yarn  = 131072
+print_info: rope_finetuned   = unknown
+print_info: model type       = 13B
+print_info: model params     = 23.57 B
+print_info: general.name     = Mistral-Small-3.2-24B-Instruct-2506
+print_info: vocab type       = BPE
+print_info: n_vocab          = 131072
+print_info: n_merges         = 269443
+print_info: BOS token        = 1 '<s>'
+print_info: EOS token        = 2 '</s>'
+print_info: UNK token        = 0 '<unk>'
+print_info: PAD token        = 11 '<pad>'
+print_info: LF token         = 1010 'Ċ'
+print_info: EOG token        = 2 '</s>'
+print_info: max token length = 150
+load_tensors: loading model tensors, this can take a while... (mmap = true)
+load_tensors: offloading 40 repeating layers to GPU
+load_tensors: offloading output layer to GPU
+load_tensors: offloaded 41/41 layers to GPU
+load_tensors:        CUDA0 model buffer size = 23206.58 MiB
+load_tensors:   CPU_Mapped model buffer size =   680.00 MiB
+.................................................................................................
+llama_context: constructing llama_context
+llama_context: n_seq_max     = 1
+llama_context: n_ctx         = 32768
+llama_context: n_ctx_per_seq = 32768
+llama_context: n_batch       = 1536
+llama_context: n_ubatch      = 512
+llama_context: causal_attn   = 1
+llama_context: flash_attn    = auto
+llama_context: kv_unified    = false
+llama_context: freq_base     = 1000000000.0
+llama_context: freq_scale    = 1
+llama_context: n_ctx_per_seq (32768) < n_ctx_train (131072) -- the full capacity of the model will not be utilized
+llama_context:  CUDA_Host  output buffer size =     0.50 MiB
+llama_kv_cache:      CUDA0 KV buffer size =  5120.00 MiB
+llama_kv_cache: size = 5120.00 MiB ( 32768 cells,  40 layers,  1/1 seqs), K (f16): 2560.00 MiB, V (f16): 2560.00 MiB
+llama_context: Flash Attention was auto, set to enabled
+llama_context:      CUDA0 compute buffer size =   266.00 MiB
+llama_context:  CUDA_Host compute buffer size =    74.01 MiB
+llama_context: graph nodes  = 1247
+llama_context: graph splits = 2
+common_init_from_params: added </s> logit bias = -inf
+common_init_from_params: setting dry_penalty_last_n to ctx_size = 32768
+common_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)
+srv          init: initializing slots, n_slots = 1
+slot         init: id  0 | task -1 | new slot n_ctx_slot = 32768
+srv          init: Enable thinking? 0
+main: model loaded
+main: chat template, chat_template: {#- Unsloth template fixes #}
+{%- set yesterday_day = strftime_now("%d") %}
+{%- set yesterday_month = strftime_now("%m") %}
+{%- set yesterday_year = strftime_now("%Y") %}
+{%- set today_date = yesterday_year + '-' + yesterday_month + '-' + yesterday_day %}
+{%- if yesterday_day == '01' %}
+    {#- Jinja doesnt allow minus 1 date - Unsloth alternative #}
+    {%- if yesterday_month == '01' %}
+        {%- set yesterday_day = '31' %}
+        {%- set yesterday_month = '12' %}
+        {%- if yesterday_year == '2024' %}
+            {%- set yesterday_year = '2023' %}
+        {%- elif yesterday_year == '2025' %}
+            {%- set yesterday_year = '2024' %}
+        {%- elif yesterday_year == '2026' %}
+            {%- set yesterday_year = '2025' %}
+        {%- elif yesterday_year == '2027' %}
+            {%- set yesterday_year = '2026' %}
+        {%- elif yesterday_year == '2028' %}
+            {%- set yesterday_year = '2027' %}
+        {%- elif yesterday_year == '2029' %}
+            {%- set yesterday_year = '2028' %}
+        {%- elif yesterday_year == '2030' %}
+            {%- set yesterday_year = '2029' %}
+        {%- elif yesterday_year == '2031' %}
+            {%- set yesterday_year = '2030' %}
+        {%- elif yesterday_year == '2032' %}
+            {%- set yesterday_year = '2031' %}
+        {%- elif yesterday_year == '1970' %}
+            {#- Stop llama_cpp from erroring out #}
+            {%- set yesterday_year = '1970' %}
+        {%- else %}
+            {{- raise_exception('Unsloth custom template does not support years > 2032. Error year = [' + yesterday_year + ']') }}
+        {%- endif %}
+    {%- elif yesterday_month == '02' %}
+        {%- set yesterday_day = '31' %}
+        {%- set yesterday_month = '01' %}
+    {%- elif yesterday_month == '03' %}
+        {%- set yesterday_month = '02' %}
+        {%- set yesterday_day = '28' %}
+        {%- if yesterday_year == '2024' %}
+            {%- set yesterday_day = '29' %}
+        {%- elif yesterday_year == '2028' %}
+            {%- set yesterday_day = '29' %}
+        {%- elif yesterday_year == '2032' %}
+            {%- set yesterday_day = '29' %}
+        {%- elif yesterday_year == '1970' %}
+            {#- Stop llama_cpp from erroring out #}
+            {%- set yesterday_day = '29' %}
+        {%- else %}
+            {{- raise_exception('Unsloth custom template does not support years > 2032. Error year = [' + yesterday_year + ']') }}
+        {%- endif %}
+    {%- elif yesterday_month == '04' %}
+        {%- set yesterday_day = '31' %}
+        {%- set yesterday_month = '03' %}
+    {%- elif yesterday_month == '05' %}
+        {%- set yesterday_day = '30' %}
+        {%- set yesterday_month = '04' %}
+    {%- elif yesterday_month == '06' %}
+        {%- set yesterday_day = '31' %}
+        {%- set yesterday_month = '05' %}
+    {%- elif yesterday_month == '07' %}
+        {%- set yesterday_day = '30' %}
+        {%- set yesterday_month = '06' %}
+    {%- elif yesterday_month == '08' %}
+        {%- set yesterday_day = '31' %}
+        {%- set yesterday_month = '07' %}
+    {%- elif yesterday_month == '09' %}
+        {%- set yesterday_day = '31' %}
+        {%- set yesterday_month = '08' %}
+    {%- elif yesterday_month == '10' %}
+        {%- set yesterday_day = '30' %}
+        {%- set yesterday_month = '09' %}
+    {%- elif yesterday_month == '11' %}
+        {%- set yesterday_day = '31' %}
+        {%- set yesterday_month = '10' %}
+    {%- elif yesterday_month == '12' %}
+        {%- set yesterday_day = '30' %}
+        {%- set yesterday_month = '11' %}
+    {%- endif %}
+{%- elif yesterday_day == '02' %}
+    {%- set yesterday_day = '01' %}
+{%- elif yesterday_day == '03' %}
+    {%- set yesterday_day = '02' %}
+{%- elif yesterday_day == '04' %}
+    {%- set yesterday_day = '03' %}
+{%- elif yesterday_day == '05' %}
+    {%- set yesterday_day = '04' %}
+{%- elif yesterday_day == '06' %}
+    {%- set yesterday_day = '05' %}
+{%- elif yesterday_day == '07' %}
+    {%- set yesterday_day = '06' %}
+{%- elif yesterday_day == '08' %}
+    {%- set yesterday_day = '07' %}
+{%- elif yesterday_day == '09' %}
+    {%- set yesterday_day = '08' %}
+{%- elif yesterday_day == '10' %}
+    {%- set yesterday_day = '09' %}
+{%- elif yesterday_day == '11' %}
+    {%- set yesterday_day = '10' %}
+{%- elif yesterday_day == '12' %}
+    {%- set yesterday_day = '11' %}
+{%- elif yesterday_day == '13' %}
+    {%- set yesterday_day = '12' %}
+{%- elif yesterday_day == '14' %}
+    {%- set yesterday_day = '13' %}
+{%- elif yesterday_day == '15' %}
+    {%- set yesterday_day = '14' %}
+{%- elif yesterday_day == '16' %}
+    {%- set yesterday_day = '15' %}
+{%- elif yesterday_day == '17' %}
+    {%- set yesterday_day = '16' %}
+{%- elif yesterday_day == '18' %}
+    {%- set yesterday_day = '17' %}
+{%- elif yesterday_day == '19' %}
+    {%- set yesterday_day = '18' %}
+{%- elif yesterday_day == '20' %}
+    {%- set yesterday_day = '19' %}
+{%- elif yesterday_day == '21' %}
+    {%- set yesterday_day = '20' %}
+{%- elif yesterday_day == '22' %}
+    {%- set yesterday_day = '21' %}
+{%- elif yesterday_day == '23' %}
+    {%- set yesterday_day = '22' %}
+{%- elif yesterday_day == '24' %}
+    {%- set yesterday_day = '23' %}
+{%- elif yesterday_day == '25' %}
+    {%- set yesterday_day = '24' %}
+{%- elif yesterday_day == '26' %}
+    {%- set yesterday_day = '25' %}
+{%- elif yesterday_day == '27' %}
+    {%- set yesterday_day = '26' %}
+{%- elif yesterday_day == '28' %}
+    {%- set yesterday_day = '27' %}
+{%- elif yesterday_day == '29' %}
+    {%- set yesterday_day = '28' %}
+{%- elif yesterday_day == '30' %}
+    {%- set yesterday_day = '29' %}
+{%- elif yesterday_day == '31' %}
+    {%- set yesterday_day = '30' %}
+{%- endif %}
+{#- Edits made by Unsloth #}
+{%- set yesterday_date = yesterday_year + '-' + yesterday_month + '-' + yesterday_day %}
+{%- set default_system_message = "You are Mistral-Small-3.2-24B-Instruct-2506, a Large Language Model (LLM) created by Mistral AI, a French startup headquartered in Paris.\nYou power an AI assistant called Le Chat.\nYour knowledge base was last updated on 2023-10-01.\nThe current date is " + today_date + ".\n\nWhen you\'re not sure about some information or when the user\'s request requires up-to-date or specific data, you must use the available tools to fetch the information. Do not hesitate to use tools whenever they can provide a more accurate or complete response. If no relevant tools are available, then clearly state that you don\'t have the information and avoid making up anything.\nIf the user\'s question is not clear, ambiguous, or does not provide enough context for you to accurately answer the question, you do not try to answer it right away and you rather ask the user to clarify their request (e.g. \"What are some good restaurants around me?\" => \"Where are you?\" or \"When is the next flight to Tokyo\" => \"Where do you travel from?\").\nYou are always very attentive to dates, in particular you try to resolve dates (e.g. \"yesterday\" is " + yesterday_date + ") and when asked about information at specific dates, you discard information that is at another date.\nYou follow these instructions in all languages, and always respond to the user in the language they use or request.\nNext sections describe the capabilities that you have.\n\n# WEB BROWSING INSTRUCTIONS\n\nYou cannot perform any web search or access internet to open URLs, links etc. If it seems like the user is expecting you to do so, you clarify the situation and ask the user to copy paste the text directly in the chat.\n\n# MULTI-MODAL INSTRUCTIONS\n\nYou have the ability to read images, but you cannot generate images. You also cannot transcribe audio files or videos.\nYou cannot read nor transcribe audio files or videos.\n\n# TOOL CALLING INSTRUCTIONS\n\nYou may have access to tools that you can use to fetch information or perform actions. You must use these tools in the following situations:\n\n1. When the request requires up-to-date information.\n2. When the request requires specific data that you do not have in your knowledge base.\n3. When the request involves actions that you cannot perform without tools.\n\nAlways prioritize using tools to provide the most accurate and helpful response. If tools are not available, inform the user that you cannot perform the requested action at the moment." %}
+
+{{- bos_token }}
+
+{%- if messages[0]['role'] == 'system' %}
+    {%- if messages[0]['content'] is string %}
+        {%- set system_message = messages[0]['content'] %}
+    {%- elif messages[0]['content'] is iterable %}
+        {%- set system_message = messages[0]['content'][0]['text'] %}
+    {%- else %}
+        {%- set system_message = messages[0]['content']|string %}
+    {%- endif %}
+    {%- set loop_messages = messages[1:] %}
+{%- else %}
+    {%- set system_message = default_system_message %}
+    {%- set loop_messages = messages %}
+{%- endif %}
+{{- '[SYSTEM_PROMPT]' + system_message + '[/SYSTEM_PROMPT]' }}
+
+
+{#- Tool description appended ONLY to last user message. Edits made by Unsloth #}
+{#- Tool description appended also if last message is tool. Edits made by Unsloth #}
+{%- set tools_description = "" %}
+{%- set has_tools = false %}
+{#- Cannot use set append_tools_index = loop.index0 since temporary variable - must use namespace #}
+{%- set ns = namespace(append_tools_index=0, append_tools=false) %}
+
+{%- if tools is defined and tools is not none and tools|length > 0 %}
+
+    {%- set has_tools = true %}
+    {%- set tools_description = "[AVAILABLE_TOOLS]" + (tools | tojson) + "[/AVAILABLE_TOOLS]" %}
+
+    {#- If User,Assistant,Tool,Tool we also need to append tools_description to  last assistant WITHOUT tool_calls defined. Edits made by Unsloth #}
+    {%- if (loop_messages|last)['role'] == 'tool' %}
+
+        {#- Find last assistant WITHOUT tool_calls defined #}
+        {%- set ns.append_tools = true %}
+        {%- for message in loop_messages %}
+            {%- if message['role'] == 'assistant' %}
+
+                {#- Cannot use set append_tools_index = loop.index0 since temporary variable - must use namespace #}
+
+                {%- if message['tool_calls'] is not defined or message['tool_calls'] is none %}
+                    {%- set ns.append_tools_index = loop.index0 %}
+                {%- endif %}
+
+            {%- endif %}
+        {%- endfor %}
+
+    {%- endif %}
+
+{%- endif %}
+
+{%- for message in loop_messages %}
+    {%- if message['role'] == 'user' %}
+
+        {%- if has_tools and loop.last %}
+            {{- tools_description }}
+        {%- endif %}
+
+        {#- If directly called tools in first turn, prepend to user #}
+        {%- if ns.append_tools and ns.append_tools_index == 0 %}
+            {{- tools_description }}
+        {%- endif %}
+
+        {%- if message['content'] is string %}
+            {{- '[INST]' + message['content'] + '[/INST]' }}
+        {%- else %}
+            {{- '[INST]' }}
+            {%- for block in message['content'] %}
+                {%- if block['type'] == 'text' %}
+
+                    {#- Original did not have content which is weird. Added by Un-sloth. #}
+                    {%- if block['text'] is defined %}
+                        {{- block['text'] }}
+                    {%- else %}
+                        {{- block['content'] }}
+                    {%- endif %}
+
+                {%- elif block['type'] in ['image', 'image_url'] %}
+                    {{- '[IMG]' }}
+                {%- else %}
+                    {{- raise_exception('Only text and image blocks are supported in message content!') }}
+                {%- endif %}
+            {%- endfor %}
+            {{- '[/INST]' }}
+        {%- endif %}
+
+    {%- elif message['role'] == 'system' %}
+        {%- if message['content'] is string %}
+            {{- '[SYSTEM_PROMPT]' + message['content'] + '[/SYSTEM_PROMPT]' }}
+        {%- elif message['content'] is iterable %}
+            {{- '[SYSTEM_PROMPT]' + message['content'][0]['text'] + '[/SYSTEM_PROMPT]' }}
+        {%- else %}
+            {{- '[SYSTEM_PROMPT]' + message['content']|string + '[/SYSTEM_PROMPT]' }}
+        {%- endif %}
+        
+
+    {%- elif message['role'] == 'assistant' %}
+        {%- if message['content'] is string %}
+            {{- message['content'] }}
+        {%- elif message['content'] is iterable %}
+            {{- message['content'][0]['text'] }}
+        {%- else %}
+            {{- message['content']|string }}
+        {%- endif %}
+
+        {#- If User,Assistant,Tool,Tool we also need to append tools_description. Edits made by Unsloth #}
+
+        {%- if has_tools and (loop.index0 == ns.append_tools_index) %}
+            {{- eos_token }}
+            {{- tools_description }}
+        {%- endif %}
+
+        {%- if message['tool_calls'] is defined and message['tool_calls'] is not none %}
+            {%- for tool in message['tool_calls'] %}
+                {%- if tool['id'] is not defined %}
+                    {{- raise_exception('Tool ID must be provided!') }}
+                {%- endif %}
+                {%- set tool_call_id = tool['id'] %}
+                {%- if tool_call_id is not string or tool_call_id|length < 9 %}
+                    {{- raise_exception("Tool call IDs should be alphanumeric strings with length >= 9!") }}
+                {%- endif %}
+                {%- set arguments = tool['function']['arguments'] %}
+                {%- if arguments is not string %}
+                    {%- set arguments = arguments|tojson %}
+                {%- endif %}
+                {#- Must list tool calls AFTER assistant. Edits made by Un-sloth #}
+                {{- "[TOOL_CALLS]" + tool['function']['name'] + "[CALL_ID]" + tool_call_id + "[ARGS]" + arguments }}
+            {%- endfor %}
+        {%- endif %}
+
+        {#- Must not add EOS if added tools_description. Unsloth edits. #}
+        {%- if (loop.index0 != ns.append_tools_index) %}
+            {{- eos_token }}
+        {%- endif %}
+
+    {%- elif message["role"] == "tool_results" or message["role"] == "tool" %}
+        {%- if message.content is defined and message.content.content is defined %}
+            {%- set content = message.content.content %}
+        {%- else %}
+            {%- set content = message.content %}
+        {%- endif %}
+        {%- if message['tool_call_id'] is not defined %}
+            {{- raise_exception('tool_call_id must be provided!') }}
+        {%- endif %}
+        {%- set tool_call_id = message['tool_call_id'] %}
+        {%- if tool_call_id is not string or tool_call_id|length < 9 %}
+            {{- raise_exception("Tool call IDs should be alphanumeric strings with length >= 9!") }}
+        {%- endif %}
+        {{- "[TOOL_RESULTS]" + tool_call_id + "[TOOL_CONTENT]" + content|string + "[/TOOL_RESULTS]" }}
+
+    {%- else %}
+        {{- raise_exception('Only user, systemm assistant and tool roles are supported in the custom template made by Unsloth!') }}
+    {%- endif %}
+{%- endfor %}
+{#- Copyright 2025-present Unsloth. Apache 2.0 License. #}, example_format: '[SYSTEM_PROMPT] You are a helpful assistant[/SYSTEM_PROMPT][INST] Hello[/INST] Hi there</s>[INST] How are you?[/INST]'
+main: server is listening on http://127.0.0.1:11436 - starting the main loop
+srv  update_slots: all slots are idle

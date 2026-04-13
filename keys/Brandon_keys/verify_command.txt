@@ -1,0 +1,4 @@
+Files signed using this key pair can be verified with the following command:
+
+minisign -Vm <file> -P RWQWgkNuQ2fdgPJNh5sPcaG7PXkdaXwoCzaAUlX8M0KzAwwyntX74gtp
+

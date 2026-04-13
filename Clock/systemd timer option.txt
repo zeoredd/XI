@@ -1,0 +1,240 @@
+Systemd timers (alternative to cron)
+Prep (one-time)
+sudo mkdir -p /home/node-alpha/XI/logs
+sudo chown -R node-alpha:node-alpha /home/node-alpha/XI/logs
+
+1) 03:00 — Protocol audit + AI edge-cases task
+
+/etc/systemd/system/xi-sentinel-night-audit.service
+
+[Unit]
+Description=XI Sentinel Night Audit (protocol + AI edge-cases)
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/node-alpha/XI
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/node-alpha/XI/venv/bin/python3 -m runtime.routines_orchestrator --sentinel --sentinel-ai-edgecases
+StandardOutput=append:/home/node-alpha/XI/logs/sentinel_night_audit.log
+StandardError=append:/home/node-alpha/XI/logs/sentinel_night_audit.log
+User=node-alpha
+Group=node-alpha
+
+
+/etc/systemd/system/xi-sentinel-night-audit.timer
+
+[Unit]
+Description=Run XI Sentinel Night Audit at 03:00 daily
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+AccuracySec=1min
+Unit=xi-sentinel-night-audit.service
+
+[Install]
+WantedBy=timers.target
+
+2) 03:10 — Consume AI task (agent review → overlays → re-index)
+
+/etc/systemd/system/xi-sentinel-ai-consume.service
+
+[Unit]
+Description=XI Sentinel AI Task Consumer
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/node-alpha/XI
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/node-alpha/XI/venv/bin/python3 -m runtime.routines_orchestrator --sentinel-ai-consume
+StandardOutput=append:/home/node-alpha/XI/logs/sentinel_night_ai_consume.log
+StandardError=append:/home/node-alpha/XI/logs/sentinel_night_ai_consume.log
+User=node-alpha
+Group=node-alpha
+
+
+/etc/systemd/system/xi-sentinel-ai-consume.timer
+
+[Unit]
+Description=Run XI Sentinel AI Consumer at 03:10 daily
+
+[Timer]
+OnCalendar=*-*-* 03:10:00
+Persistent=true
+AccuracySec=1min
+Unit=xi-sentinel-ai-consume.service
+
+[Install]
+WantedBy=timers.target
+
+3) 03:20 — Rollups (if due) + amendment sweep + indexer one-shot
+
+/etc/systemd/system/xi-run-all.service
+
+[Unit]
+Description=XI Run-All (rollups + sweep + index + ensure daemon)
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/node-alpha/XI
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/node-alpha/XI/venv/bin/python3 -m runtime.routines_orchestrator --run-all
+StandardOutput=append:/home/node-alpha/XI/logs/run_all.log
+StandardError=append:/home/node-alpha/XI/logs/run_all.log
+User=node-alpha
+Group=node-alpha
+
+
+/etc/systemd/system/xi-run-all.timer
+
+[Unit]
+Description=Run XI Run-All at 03:20 daily
+
+[Timer]
+OnCalendar=*-*-* 03:20:00
+Persistent=true
+AccuracySec=1min
+Unit=xi-run-all.service
+
+[Install]
+WantedBy=timers.target
+
+4) 04:00 — Quick Sentinel (last 2h sanity)
+
+/etc/systemd/system/xi-sentinel-quick.service
+
+[Unit]
+Description=XI Sentinel Quick Audit (last N hours)
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/node-alpha/XI
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/node-alpha/XI/venv/bin/python3 -m runtime.routines_orchestrator --sentinel-quick --sentinel-window-hours 2
+StandardOutput=append:/home/node-alpha/XI/logs/sentinel_quick.log
+StandardError=append:/home/node-alpha/XI/logs/sentinel_quick.log
+User=node-alpha
+Group=node-alpha
+
+
+/etc/systemd/system/xi-sentinel-quick.timer
+
+[Unit]
+Description=Run XI Sentinel Quick at 04:00 daily
+
+[Timer]
+OnCalendar=*-*-* 04:00:00
+Persistent=true
+AccuracySec=1min
+Unit=xi-sentinel-quick.service
+
+[Install]
+WantedBy=timers.target
+
+5) 04:30 — Sandbox retention (keep 21 days)
+
+/etc/systemd/system/xi-sandbox-retention.service
+
+[Unit]
+Description=XI Sandbox Retention Cleanup
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/node-alpha/XI
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/node-alpha/XI/venv/bin/python3 tools/sandbox_retention.py --root ./sandbox --days 21
+StandardOutput=append:/home/node-alpha/XI/logs/sandbox_retention.log
+StandardError=append:/home/node-alpha/XI/logs/sandbox_retention.log
+User=node-alpha
+Group=node-alpha
+
+
+/etc/systemd/system/xi-sandbox-retention.timer
+
+[Unit]
+Description=Run XI Sandbox Retention at 04:30 daily
+
+[Timer]
+OnCalendar=*-*-* 04:30:00
+Persistent=true
+AccuracySec=1min
+Unit=xi-sandbox-retention.service
+
+[Install]
+WantedBy=timers.target
+
+Weekly DB maintenance (Sunday 04:45)
+
+/etc/systemd/system/xi-db-vacuum.service
+
+[Unit]
+Description=XI DB Vacuum/Analyze
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/psql -d xi_memory -c VACUUM\ \(ANALYZE\)\;
+StandardOutput=append:/home/node-alpha/XI/logs/db_maint.log
+StandardError=append:/home/node-alpha/XI/logs/db_maint.log
+User=node-alpha
+Group=node-alpha
+
+
+/etc/systemd/system/xi-db-vacuum.timer
+
+[Unit]
+Description=Run XI DB Vacuum weekly (Sun 04:45)
+
+[Timer]
+OnCalendar=Sun *-*-* 04:45:00
+Persistent=true
+AccuracySec=1min
+Unit=xi-db-vacuum.service
+
+[Install]
+WantedBy=timers.target
+
+Monthly reindex/backup (1st 05:30)
+
+/etc/systemd/system/xi-monthly-index-backup.service
+
+[Unit]
+Description=XI Monthly Cold Index Sweep + DB Backup
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/node-alpha/XI
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/bin/sh -c '/home/node-alpha/XI/venv/bin/python3 -m abilities.common_abilities.memory_indexer >> /home/node-alpha/XI/logs/index_full.log 2>&1 && /usr/bin/pg_dump xi_memory > /home/node-alpha/XI/backups/xi_memory_$(date +%Y%m%d).sql'
+StandardOutput=append:/home/node-alpha/XI/logs/index_full.log
+StandardError=append:/home/node-alpha/XI/logs/index_full.log
+User=node-alpha
+Group=node-alpha
+
+
+/etc/systemd/system/xi-monthly-index-backup.timer
+
+[Unit]
+Description=Run XI Monthly Index Sweep + Backup (1st @ 05:30)
+
+[Timer]
+OnCalendar=*-01 05:30:00
+Persistent=true
+AccuracySec=1min
+Unit=xi-monthly-index-backup.service
+
+[Install]
+WantedBy=timers.target
+
+Enable everything
+sudo systemctl daemon-reload
+sudo systemctl enable --now \
+  xi-sentinel-night-audit.timer \
+  xi-sentinel-ai-consume.timer \
+  xi-run-all.timer \
+  xi-sentinel-quick.timer \
+  xi-sandbox-retention.timer \
+  xi-db-vacuum.timer \
+  xi-monthly-index-backup.timer
+
+# peek
+systemctl list-timers | grep xi-
